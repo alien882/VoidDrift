@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fd51189ac8414d4387334cd3acefc6d, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: Assembly-CSharp::GameConfig
+  playerMaxSpeed: 11
+  playerThrustForce: 32
+  playerLinearDrag: 1.8
+  playerAngularDrag: 2.5
+  nearMissDistance: 1.5
+  nearMissCooldown: 0.5
+  nearMissBasePoints: 15
+  multiplierIncreaseInterval: 45
+  multiplierIncreaseAmount: 0.5
+  essenceTimeMultiplier: 0.85
+  essenceMultiplierBonus: 25
+  essenceNearMissBonus: 8
+  spawnRatePhase1: 1.8
+  spawnRatePhase2: 1.4
+  spawnRatePhase3: 1.1
+  spawnRatePhase4: 0.9
+  spawnRatePhase5: 0.7
+  asteroidSpeedPhase1: 1
+  asteroidSpeedPhase2: 1.15
+  asteroidSpeedPhase3: 1.3
+  asteroidSpeedPhase4: 1.45
+  asteroidSpeedPhase5: 1.6
