@@ -30,6 +30,14 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        // Verificación temporal — eliminar después
+        // CameraController cam = Camera.main.GetComponent<CameraController>();
+        // if (cam != null)
+        // {
+        //     Debug.Log($"[Camera] Bounds → Top:{cam.WorldTop:F1} Bottom:{cam.WorldBottom:F1} " +
+        //               $"Left:{cam.WorldLeft:F1} Right:{cam.WorldRight:F1}");
+        // }
+
         StartRun();
     }
 
