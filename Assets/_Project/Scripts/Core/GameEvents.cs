@@ -40,3 +40,9 @@ public struct UpgradePurchasedEvent
 
 // Nueva run iniciada
 public struct RunStartedEvent { }
+
+// Las vidas del jugador cambiaron (upgrade Extra Life)
+public struct LivesChangedEvent
+{
+    public int remainingLives;
+}
