@@ -39,10 +39,4 @@ public static class EventBus
         foreach (Delegate handler in subscribers[type].ToArray())
             (handler as Action<T>)?.Invoke(eventData);
     }
-
-    // Limpia todos los suscriptores — llamar al reiniciar la escena
-    public static void Clear()
-    {
-        subscribers.Clear();
-    }
 }

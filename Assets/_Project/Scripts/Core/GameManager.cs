@@ -46,7 +46,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartRun()
     {
-        EventBus.Clear(); // Limpia suscriptores de la run anterior
         ChangeState(GameState.Playing);
         EventBus.Publish(new RunStartedEvent());
     }
