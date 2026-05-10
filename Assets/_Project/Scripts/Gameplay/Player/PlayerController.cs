@@ -157,10 +157,8 @@ public class PlayerController : MonoBehaviour
             // Desactivar la nave — no destruir para no perder referencias
             gameObject.SetActive(false);
 
-            // Notificar al GameManager — él calcula la Drift Essence
-            GameManager.Instance.OnPlayerDied(0, 0f, 0, 1f);
-            // Nota: el score, tiempo y near miss los enviará el ScoreManager
-            // que también escucha PlayerDiedEvent. Se conectan en el Step 6.
+            // Publicar evento — ScoreManager se encarga del resto
+            EventBus.Publish(new PlayerDiedEvent());
         }
 
         // ─── Eventos ──────────────────────────────────────────────────────
