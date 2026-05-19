@@ -12,6 +12,9 @@ public class GameManager : MonoBehaviour
     [Header("Configuración")]
     [SerializeField] private GameConfig gameConfig;
 
+    [Header("Referencias")]
+    [SerializeField] private GameObject playerObject;
+
     public GameConfig Config => gameConfig;
     public GameState CurrentState { get; private set; } = GameState.Playing;
 
@@ -46,6 +49,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartRun()
     {
+        // Reactivar el player antes de publicar el evento
+        // así PlayerController ya está activo y suscrito cuando llega RunStartedEvent
+        if (playerObject != null)
+            playerObject.SetActive(true);
+
         ChangeState(GameState.Playing);
         EventBus.Publish(new RunStartedEvent());
     }

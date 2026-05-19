@@ -29,13 +29,16 @@ public class NearMissDetector : MonoBehaviour
     private void OnEnable()
     {
         EventBus.Subscribe<RunStartedEvent>(OnRunStarted);
-        EventBus.Subscribe<PlayerDiedEvent>(OnPlayerDied);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe<RunStartedEvent>(OnRunStarted);
-        EventBus.Unsubscribe<PlayerDiedEvent>(OnPlayerDied);
+
+        // Limpiar antes de que Unity dispare OnTriggerExit2D
+        // al desactivar el collider
+        asteroidsInRange.Clear();
+        isDead = true;
     }
 
     // ─── Trigger ──────────────────────────────────────────────────────
@@ -77,13 +80,6 @@ public class NearMissDetector : MonoBehaviour
     }
 
     // ─── Eventos ──────────────────────────────────────────────────────
-
-    private void OnPlayerDied(PlayerDiedEvent e)
-    {
-        // Marcar como muerto para ignorar triggers mientras explota
-        isDead = true;
-        asteroidsInRange.Clear();
-    }
 
     private void OnRunStarted(RunStartedEvent e)
     {

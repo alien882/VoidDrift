@@ -1,0 +1,36 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Project/UI/StyleSheets/VoidDrift.uss?fileID=7433441132597879392&amp;guid=a95708a97d568e24fa37987e4afc175a&amp;type=3#VoidDrift"/>
+    <ui:VisualElement name="Root" class="root">
+        <ui:VisualElement name="HUDPanel" class="panel">
+            <ui:VisualElement class="hubTop">
+                <ui:Label text="0" name="ScoreLabel" class="textScore"/>
+                <ui:Label text="x1.0" name="MultiplierLabel" class="textMultiplier"/>
+            </ui:VisualElement>
+            <ui:Label text="HI 0" name="HighScoreLabel" class="textHighscore hubHighscore"/>
+            <ui:VisualElement name="BorderWarning" class="borderWarning"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="GameOverPanel" class="panel">
+            <ui:VisualElement class="gameoverOverlay">
+                <ui:Label text="GAME OVER" class="gameoverTitle"/>
+                <ui:Label text="SCORE" class="gameoverStatLabel"/>
+                <ui:Label text="0" name="FinalScoreLabel" class="gameoverStatValue"/>
+                <ui:Label text="TIEMPO" class="gameoverStatLabel"/>
+                <ui:Label text="0s" name="SurvivalTimeLabel" class="gameoverStatValue"/>
+                <ui:Label text="DRIFT ESSENCE GANADA" class="gameoverStatLabel"/>
+                <ui:Label text="0" name="EssenceEarnedLabel" class="gameoverStatValue essenceValue"/>
+                <ui:Button text="UPGRADES" name="UpgradesButton" class="btn btnPrimary"/>
+                <ui:Button text="REINTENTAR" name="RestartButton" class="btn btnSecondary"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="UpgradesPanel" class="panel">
+            <ui:VisualElement class="upgradesContainer">
+                <ui:Label text="MEJORAS DE NAVE" class="upgradesTitle"/>
+                <ui:Label text="DRIFT ESSENCE: 0" name="TotalEssenceLabel" class="essenceDisplay"/>
+                <ui:ScrollView name="UpgradesScrollView" mode="Vertical" class="upgradesScroll">
+                    <ui:VisualElement name="UpgradesGrid" class="upgradesGrid"/>
+                </ui:ScrollView>
+                <ui:Button text="CONTINUAR" name="ContinueButton" class="btn btnPrimary"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
