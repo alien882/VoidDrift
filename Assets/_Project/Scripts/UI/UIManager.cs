@@ -183,10 +183,10 @@ public class UIManager : MonoBehaviour
         if (isMaxed) card.AddToClassList("upgradeCardMaxed");
 
         Label nameLabel = new() { text = upgrade.upgradeName };
-        nameLabel.AddToClassList("upgrade-name");
+        nameLabel.AddToClassList("upgradeName");
 
         Label effectLabel = new() { text = upgrade.effectDescription };
-        effectLabel.AddToClassList("upgrade-effect");
+        effectLabel.AddToClassList("upgradeEffect");
 
         string levelText = isMaxed
             ? $"NIVEL MÁX ({upgrade.maxLevel})"

@@ -236,7 +236,7 @@
 
 .upgradeName {
     font-size: 13px;
-    color: rgb(255, 255, 255);
+    color: rgb(220, 240, 255);
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     margin-bottom: 4px;
@@ -244,7 +244,7 @@
 
 .upgradeEffect {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgb(180, 220, 255);
     -unity-text-align: middle-center;
     margin-bottom: 8px;
 }

@@ -269,8 +269,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d81ea37807a292b43b06c9947d132448, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
-  baseHalfWidth: 9
-  baseHalfHeight: 5
+  baseHalfWidth: 4.5
+  baseHalfHeight: 8
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -408,7 +408,7 @@ MonoBehaviour:
       m_Flags: 0
     - m_Name: 
       m_Id: 30869628-0129-4582-b86a-c0099d81ccca
-      m_Path: <Touchscreen>/primaryTouch/pressure
+      m_Path: <Touchscreen>/Press
       m_Interactions: 
       m_Processors: 
       m_Groups: 
