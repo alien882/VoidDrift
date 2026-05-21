@@ -46,3 +46,10 @@ public struct LivesChangedEvent
 {
     public int remainingLives;
 }
+
+// Evento de Asteroid Storm — ráfaga de asteroides pequeños
+public struct AsteroidStormEvent
+{
+    public int asteroidCount;     // Cuántos asteroides spawnear en la ráfaga
+    public float spawnInterval;   // Segundos entre cada spawn de la ráfaga
+}

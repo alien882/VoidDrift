@@ -440,6 +440,7 @@ MonoBehaviour:
       m_Action: Look
       m_Flags: 0
     m_Flags: 0
+  upgradeManager: {fileID: 1744011164}
 --- !u!58 &631762829
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -801,6 +802,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da4a40738a64b9d4e91b2913d7b8dece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreManager
+  upgradeManager: {fileID: 1744011164}
 --- !u!4 &1744011163
 Transform:
   m_ObjectHideFlags: 0
@@ -883,6 +885,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f28b5530949bf3141b021d7472196cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NearMissDetector
+  upgradeManager: {fileID: 1744011164}
 --- !u!58 &1798731000
 CircleCollider2D:
   m_ObjectHideFlags: 0

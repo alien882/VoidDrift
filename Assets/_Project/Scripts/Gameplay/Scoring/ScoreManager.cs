@@ -6,6 +6,9 @@ using UnityEngine;
 /// </summary>
 public class ScoreManager : MonoBehaviour
 {
+
+    [SerializeField] private UpgradeManager upgradeManager;
+
     // Estado de la run actual
     private float elapsedTime;
     private float currentMultiplier;
@@ -53,15 +56,24 @@ public class ScoreManager : MonoBehaviour
 
     private void UpdateMultiplier()
     {
-        // Multiplicador sube cada X segundos según GameConfig
-        float newMultiplier = 1f + Mathf.Floor(elapsedTime / gameConfig.multiplierIncreaseInterval)
-                                 * gameConfig.multiplierIncreaseAmount;
+        float upgradeBonus = 0f;
+        if (upgradeManager != null)
+        {
+            UpgradeData scoreUpgrade = upgradeManager.GetAllUpgrades()
+                .Find(u => u.upgradeType == UpgradeType.ScoreMultiplier);
+            if (scoreUpgrade != null)
+                upgradeBonus = upgradeManager.GetLevel(scoreUpgrade)
+                             * scoreUpgrade.effectPerLevel;
+        }
+
+        float newMultiplier = 1f + upgradeBonus +
+                              Mathf.Floor(elapsedTime / gameConfig.multiplierIncreaseInterval)
+                              * gameConfig.multiplierIncreaseAmount;
 
         if (!Mathf.Approximately(newMultiplier, currentMultiplier))
         {
             currentMultiplier = newMultiplier;
             maxMultiplier = Mathf.Max(maxMultiplier, currentMultiplier);
-
             EventBus.Publish(new ScoreChangedEvent
             {
                 newScore = currentScore,

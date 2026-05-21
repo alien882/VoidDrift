@@ -35,6 +35,12 @@ public class ObstacleSpawner : MonoBehaviour
     private const float SpawnChanceMedium = 0.40f;
     // Big = 1 - Small - Medium = 0.15f
 
+    // Estado del Asteroid Storm
+    private bool stormActive;
+    private float stormTimer;
+    private int stormAsteroidsRemaining;
+    private const float StormSpawnInterval = 0.15f;
+
     private void OnEnable()
     {
         EventBus.Subscribe<RunStartedEvent>(OnRunStarted);
@@ -77,16 +83,43 @@ public class ObstacleSpawner : MonoBehaviour
 
         UpdateDifficulty();
 
+        // Spawn normal
         if (spawnTimer >= currentSpawnRate)
         {
             spawnTimer = 0f;
             SpawnObstacle();
         }
+
+        // Spawn del storm
+        if (stormActive)
+        {
+            stormTimer += Time.deltaTime;
+            if (stormTimer >= StormSpawnInterval)
+            {
+                stormTimer = 0f;
+                SpawnStormObstacle();
+                stormAsteroidsRemaining--;
+                if (stormAsteroidsRemaining <= 0)
+                    stormActive = false;
+            }
+        }
+    }
+
+    private void SpawnStormObstacle()
+    {
+        Vector2 spawnPos = cameraController.GetRandomSpawnPosition();
+        Vector2 direction = (Vector2.zero - spawnPos).normalized;
+        float angle = Random.Range(-45f, 45f);
+        direction = Quaternion.Euler(0f, 0f, angle) * direction;
+
+        Obstacle obstacle = poolSmall.Get();
+        obstacle.Initialize(configSmall, spawnPos, direction,
+                            currentSpeedMultiplier * 1.3f,
+                            returnedObstacle => poolSmall.Release(returnedObstacle));
     }
 
     private void UpdateDifficulty()
     {
-        // Curva de dificultad basada en Balance.md
         if (elapsedTime < 30f)
         {
             currentSpawnRate = gameConfig.spawnRatePhase1;
@@ -101,19 +134,43 @@ public class ObstacleSpawner : MonoBehaviour
         {
             currentSpawnRate = gameConfig.spawnRatePhase3;
             currentSpeedMultiplier = gameConfig.asteroidSpeedPhase3;
+            TryTriggerStorm(asteroidCount: 8, interval: 60f);
         }
         else if (elapsedTime < 120f)
         {
             currentSpawnRate = gameConfig.spawnRatePhase4;
             currentSpeedMultiplier = gameConfig.asteroidSpeedPhase4;
+            TryTriggerStorm(asteroidCount: 14, interval: 90f);
         }
         else
         {
             currentSpawnRate = gameConfig.spawnRatePhase5;
             currentSpeedMultiplier = gameConfig.asteroidSpeedPhase5;
+            TryTriggerStorm(asteroidCount: 20, interval: 30f);
         }
+    }
 
-        // Debug.Log($"[Spawner] Tiempo:{elapsedTime:F0}s SpawnRate:{currentSpawnRate} SpeedMult:{currentSpeedMultiplier}");
+    private void TryTriggerStorm(int asteroidCount, float interval)
+    {
+        if (stormActive) return;
+        float timeInPhase = elapsedTime % interval;
+        if (timeInPhase < Time.deltaTime)
+            StartStorm(asteroidCount);
+    }
+
+    private void StartStorm(int asteroidCount)
+    {
+        stormActive = true;
+        stormAsteroidsRemaining = asteroidCount;
+        stormTimer = 0f;
+
+        EventBus.Publish(new AsteroidStormEvent
+        {
+            asteroidCount = asteroidCount,
+            spawnInterval = StormSpawnInterval
+        });
+
+        Debug.Log($"[Storm] Asteroid Storm iniciado — {asteroidCount} asteroides");
     }
 
     private void SpawnObstacle()
@@ -163,6 +220,9 @@ public class ObstacleSpawner : MonoBehaviour
     {
         elapsedTime = 0f;
         spawnTimer = 0f;
+        stormActive = false;
+        stormAsteroidsRemaining = 0;
+        stormTimer = 0f;
         isSpawning = true;
     }
 

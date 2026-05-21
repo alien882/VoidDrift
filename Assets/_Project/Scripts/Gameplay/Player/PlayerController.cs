@@ -11,166 +11,207 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [Header("Datos del jugador")]
-        [SerializeField] private PlayerData playerData;
+    [SerializeField] private PlayerData playerData;
 
-        [Header("Referencias")]
-        [SerializeField] private GameObject boosterFlame;
-        [SerializeField] private GameObject explosionEffect;
+    [Header("Referencias")]
+    [SerializeField] private GameObject boosterFlame;
+    [SerializeField] private GameObject explosionEffect;
 
-        [Header("Input")]
-        [SerializeField] private InputAction thrustAction;
-        [SerializeField] private InputAction lookAction;
+    [Header("Input")]
+    [SerializeField] private InputAction thrustAction;
+    [SerializeField] private InputAction lookAction;
 
-        // Componentes
-        private Rigidbody2D rb;
-        private Camera mainCamera;
-        private CameraController cameraController;
+    [SerializeField] private UpgradeManager upgradeManager;
 
-        // Estado interno
-        private Vector2 thrustDirection;
-        private bool isThrusting;
-        private bool isDead;
-        private int currentLives;
+    private bool isInvulnerable;
+    private float ghostDashTimer;
+    private float ghostDashCooldownTimer;
+    private const float GhostDashDuration = 3f;
+    private const float GhostDashCooldown = 60f;
 
-        // ─── Ciclo de vida ────────────────────────────────────────────────
+    // Componentes
+    private Rigidbody2D rb;
+    private Camera mainCamera;
+    private CameraController cameraController;
 
-        private void Awake()
+    // Estado interno
+    private Vector2 thrustDirection;
+    private bool isThrusting;
+    private bool isDead;
+    private int currentLives;
+
+    // ─── Ciclo de vida ────────────────────────────────────────────────
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        mainCamera = Camera.main;
+        cameraController = mainCamera.GetComponent<CameraController>();
+
+        // Aplicar stats del PlayerData al Rigidbody
+        rb.linearDamping = playerData.linearDrag;
+        rb.angularDamping = playerData.angularDrag;
+
+        // Aplicar escala de hitbox
+        transform.localScale = Vector3.one * playerData.hitboxScale;
+    }
+
+    private void OnEnable()
+    {
+        thrustAction.Enable();
+        lookAction.Enable();
+
+        EventBus.Subscribe<RunStartedEvent>(OnRunStarted);
+    }
+
+    private void OnDisable()
+    {
+        thrustAction.Disable();
+        lookAction.Disable();
+
+        EventBus.Unsubscribe<RunStartedEvent>(OnRunStarted);
+    }
+
+    private void Start()
+    {
+        currentLives = playerData.extraLives;
+        isDead = false;
+    }
+
+    // ─── Update ───────────────────────────────────────────────────────
+
+    private void Update()
+    {
+        if (isDead) return;
+
+        isThrusting = thrustAction.IsPressed();
+
+        if (isThrusting)
+            RotateTowardInput();
+
+        if (boosterFlame != null)
+            boosterFlame.SetActive(isThrusting);
+
+        CheckBorderDeath();
+        UpdateGhostDash();
+    }
+
+    private void UpdateGhostDash()
+    {
+        if (upgradeManager == null) return;
+
+        UpgradeData ghostUpgrade = upgradeManager.GetAllUpgrades()
+            .Find(u => u.upgradeType == UpgradeType.GhostDash);
+        if (ghostUpgrade == null || upgradeManager.GetLevel(ghostUpgrade) == 0) return;
+
+        ghostDashCooldownTimer += Time.deltaTime;
+
+        if (!isInvulnerable && ghostDashCooldownTimer >= GhostDashCooldown)
         {
-            rb           = GetComponent<Rigidbody2D>();
-            mainCamera   = Camera.main;
-            cameraController = mainCamera.GetComponent<CameraController>();
-
-            // Aplicar stats del PlayerData al Rigidbody
-            rb.linearDamping  = playerData.linearDrag;
-            rb.angularDamping = playerData.angularDrag;
-
-            // Aplicar escala de hitbox
-            transform.localScale = Vector3.one * playerData.hitboxScale;
+            ghostDashCooldownTimer = 0f;
+            isInvulnerable = true;
+            ghostDashTimer = 0f;
+            Debug.Log("[GhostDash] Invulnerabilidad activada — 3s");
         }
 
-        private void OnEnable()
+        if (isInvulnerable)
         {
-            thrustAction.Enable();
-            lookAction.Enable();
-
-            EventBus.Subscribe<RunStartedEvent>(OnRunStarted);
-        }
-
-        private void OnDisable()
-        {
-            thrustAction.Disable();
-            lookAction.Disable();
-
-            EventBus.Unsubscribe<RunStartedEvent>(OnRunStarted);
-        }
-
-        private void Start()
-        {
-            currentLives = playerData.extraLives;
-            isDead = false;
-        }
-
-        // ─── Update ───────────────────────────────────────────────────────
-
-        private void Update()
-        {
-            if (isDead) return;
-
-            isThrusting = thrustAction.IsPressed();
-
-            if (isThrusting)
-                RotateTowardInput();
-
-            if (boosterFlame != null)
-                boosterFlame.SetActive(isThrusting);
-
-            CheckBorderDeath();
-        }
-
-        private void FixedUpdate()
-        {
-            if (isDead) return;
-
-            if (isThrusting)
-                rb.AddForce(thrustDirection * playerData.thrustForce, ForceMode2D.Force);
-
-            ClampVelocity();
-        }
-
-        // ─── Movimiento ───────────────────────────────────────────────────
-
-        private void RotateTowardInput()
-        {
-            Vector2 inputPosition = lookAction.ReadValue<Vector2>();
-            Vector3 worldPosition = mainCamera.ScreenToWorldPoint(inputPosition);
-            worldPosition.z = 0f;
-
-            thrustDirection = ((Vector2)worldPosition - (Vector2)transform.position).normalized;
-            transform.up = thrustDirection;
-        }
-
-        private void ClampVelocity()
-        {
-            if (rb.linearVelocity.magnitude > playerData.maxSpeed)
-                rb.linearVelocity = rb.linearVelocity.normalized * playerData.maxSpeed;
-        }
-
-        // ─── Muerte ───────────────────────────────────────────────────────
-
-        private void OnCollisionEnter2D(Collision2D other)
-        {
-            if (isDead) return;
-            if (!other.gameObject.CompareTag("Obstacle")) return;
-
-            TakeDamage();
-        }
-
-        private void CheckBorderDeath()
-        {
-            if (cameraController == null) return;
-            if (cameraController.IsOutOfBounds(transform.position))
-                TakeDamage();
-        }
-
-        private void TakeDamage()
-        {
-            if (currentLives > 0)
+            ghostDashTimer += Time.deltaTime;
+            if (ghostDashTimer >= GhostDashDuration)
             {
-                // Tiene vida extra — la consume y continúa
-                currentLives--;
-                EventBus.Publish(new LivesChangedEvent { remainingLives = currentLives });
-                return;
+                isInvulnerable = false;
+                Debug.Log("[GhostDash] Invulnerabilidad terminada");
             }
-
-            Die();
         }
+    }
 
-        private void Die()
+    private void FixedUpdate()
+    {
+        if (isDead) return;
+
+        if (isThrusting)
+            rb.AddForce(thrustDirection * playerData.thrustForce, ForceMode2D.Force);
+
+        ClampVelocity();
+    }
+
+    // ─── Movimiento ───────────────────────────────────────────────────
+
+    private void RotateTowardInput()
+    {
+        Vector2 inputPosition = lookAction.ReadValue<Vector2>();
+        Vector3 worldPosition = mainCamera.ScreenToWorldPoint(inputPosition);
+        worldPosition.z = 0f;
+
+        thrustDirection = ((Vector2)worldPosition - (Vector2)transform.position).normalized;
+        transform.up = thrustDirection;
+    }
+
+    private void ClampVelocity()
+    {
+        if (rb.linearVelocity.magnitude > playerData.maxSpeed)
+            rb.linearVelocity = rb.linearVelocity.normalized * playerData.maxSpeed;
+    }
+
+    // ─── Muerte ───────────────────────────────────────────────────────
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (isDead) return;
+        if (!other.gameObject.CompareTag("Obstacle")) return;
+
+        TakeDamage();
+    }
+
+    private void CheckBorderDeath()
+    {
+        if (cameraController == null) return;
+        if (cameraController.IsOutOfBounds(transform.position))
+            TakeDamage();
+    }
+
+    private void TakeDamage()
+    {
+        if (isInvulnerable) return;
+
+        if (currentLives > 0)
         {
-            if (isDead) return;
-            isDead = true;
-
-            // Efecto de explosión
-            if (explosionEffect != null)
-                Instantiate(explosionEffect, transform.position, Quaternion.identity);
-
-            // Desactivar la nave — no destruir para no perder referencias
-            gameObject.SetActive(false);
-
-            // Publicar evento — ScoreManager se encarga del resto
-            EventBus.Publish(new PlayerDiedEvent());
+            currentLives--;
+            EventBus.Publish(new LivesChangedEvent { remainingLives = currentLives });
+            return;
         }
 
-        // ─── Eventos ──────────────────────────────────────────────────────
+        Die();
+    }
 
-        private void OnRunStarted(RunStartedEvent e)
-        {
-            // Resetear estado al iniciar nueva run
-            isDead = false;
-            currentLives = playerData.extraLives;
-            transform.position = Vector3.zero;
-            rb.linearVelocity  = Vector2.zero;
-            rb.angularVelocity = 0f;
-            gameObject.SetActive(true);
-        }
+    private void Die()
+    {
+        if (isDead) return;
+        isDead = true;
+
+        // Efecto de explosión
+        if (explosionEffect != null)
+            Instantiate(explosionEffect, transform.position, Quaternion.identity);
+
+        // Desactivar la nave — no destruir para no perder referencias
+        gameObject.SetActive(false);
+
+        // Publicar evento — ScoreManager se encarga del resto
+        EventBus.Publish(new PlayerDiedEvent());
+    }
+
+    // ─── Eventos ──────────────────────────────────────────────────────
+
+    private void OnRunStarted(RunStartedEvent e)
+    {
+        isDead = false;
+        currentLives = playerData.extraLives;
+        isInvulnerable = false;
+        ghostDashTimer = 0f;
+        ghostDashCooldownTimer = 0f;
+        transform.position = Vector3.zero;
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        gameObject.SetActive(true);
+    }
 }

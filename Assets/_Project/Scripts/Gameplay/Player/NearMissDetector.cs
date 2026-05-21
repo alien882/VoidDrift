@@ -9,6 +9,9 @@ using UnityEngine;
 [RequireComponent(typeof(CircleCollider2D))]
 public class NearMissDetector : MonoBehaviour
 {
+
+    [SerializeField] private UpgradeManager upgradeManager;
+
     // Asteroides que están actualmente dentro del trigger
     private readonly HashSet<Collider2D> asteroidsInRange = new();
 
@@ -64,19 +67,23 @@ public class NearMissDetector : MonoBehaviour
 
     private void TryRegisterNearMiss()
     {
-        // Cooldown — evita spam si varios asteroides salen a la vez
         if (Time.time - lastNearMissTime < gameConfig.nearMissCooldown) return;
 
         lastNearMissTime = Time.time;
 
-        int bonusPoints = gameConfig.nearMissBasePoints;
-
-        EventBus.Publish(new NearMissEvent
+        float bonusMultiplier = 1f;
+        if (upgradeManager != null)
         {
-            bonusPoints = bonusPoints
-        });
+            UpgradeData nearMissUpgrade = upgradeManager.GetAllUpgrades()
+                .Find(u => u.upgradeType == UpgradeType.NearMissBonus);
+            if (nearMissUpgrade != null)
+                bonusMultiplier += upgradeManager.GetLevel(nearMissUpgrade)
+                                 * nearMissUpgrade.effectPerLevel;
+        }
 
-        Debug.Log($"[NearMiss] ¡Near Miss! +{bonusPoints} puntos");
+        int bonusPoints = Mathf.RoundToInt(gameConfig.nearMissBasePoints * bonusMultiplier);
+        EventBus.Publish(new NearMissEvent { bonusPoints = bonusPoints });
+        Debug.Log($"[NearMiss] +{bonusPoints} puntos (x{bonusMultiplier:F2})");
     }
 
     // ─── Eventos ──────────────────────────────────────────────────────

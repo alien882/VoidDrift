@@ -205,7 +205,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            buyBtn.text = $"{nextCost:F0} ✦";
+            buyBtn.text = $"{nextCost:F0} ESSENCE";
             if (!canAfford)
                 buyBtn.AddToClassList("btnUpgradeDisabled");
 
