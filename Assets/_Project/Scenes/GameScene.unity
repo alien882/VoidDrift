@@ -441,6 +441,7 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
   upgradeManager: {fileID: 1744011164}
+  audioManager: {fileID: 861796761}
 --- !u!58 &631762829
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -665,6 +666,60 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
   upgradeManager: {fileID: 1744011164}
+--- !u!1 &861796760
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 861796762}
+  - component: {fileID: 861796761}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &861796761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 861796760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3deec46ea1cb09a488ad73173ce78ade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  musicCalm: {fileID: 8300000, guid: 051b509f7c8e7fe40bcfe104a028baea, type: 3}
+  musicIntense: {fileID: 8300000, guid: 9b5befd4e234a4c4fa71da09cc2bd5ca, type: 3}
+  musicStorm: {fileID: 0}
+  sfxNearMiss: {fileID: 8300000, guid: 529d21a83418d3142855ee649f485e53, type: 3}
+  sfxDeath: {fileID: 8300000, guid: 70994cf7f4eccbc4ba824d8dca6ee1e6, type: 3}
+  sfxUpgrade: {fileID: 8300000, guid: ef52595d25d781542bac01939c039bf1, type: 3}
+  sfxThrust: {fileID: 8300000, guid: b9eea6aae389fbe4fa510607b001b3c4, type: 3}
+  musicVolume: 0.6
+  sfxVolume: 0.9
+  thrustVolume: 0.3
+--- !u!4 &861796762
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 861796760}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &894102697
 GameObject:
   m_ObjectHideFlags: 0
@@ -933,3 +988,4 @@ SceneRoots:
   - {fileID: 631762831}
   - {fileID: 1241605654}
   - {fileID: 1744011163}
+  - {fileID: 861796762}

@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private UpgradeManager upgradeManager;
 
+    [SerializeField] private AudioManager audioManager;
+
     private bool isInvulnerable;
     private float ghostDashTimer;
     private float ghostDashCooldownTimer;
@@ -91,6 +93,10 @@ public class PlayerController : MonoBehaviour
 
         if (boosterFlame != null)
             boosterFlame.SetActive(isThrusting);
+
+        // Añade esta línea
+        if (audioManager != null)
+            audioManager.PlayThrust(isThrusting);
 
         CheckBorderDeath();
         UpdateGhostDash();
