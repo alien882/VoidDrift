@@ -11,6 +11,7 @@ public class NearMissDetector : MonoBehaviour
 {
 
     [SerializeField] private UpgradeManager upgradeManager;
+    [SerializeField] private GameObject nearMissVFX;
 
     // Asteroides que están actualmente dentro del trigger
     private readonly HashSet<Collider2D> asteroidsInRange = new();
@@ -83,7 +84,12 @@ public class NearMissDetector : MonoBehaviour
 
         int bonusPoints = Mathf.RoundToInt(gameConfig.nearMissBasePoints * bonusMultiplier);
         EventBus.Publish(new NearMissEvent { bonusPoints = bonusPoints });
-        Debug.Log($"[NearMiss] +{bonusPoints} puntos (x{bonusMultiplier:F2})");
+
+        // Instanciar VFX en la posición de la nave
+        if (nearMissVFX != null)
+            Instantiate(nearMissVFX, transform.parent.position, Quaternion.identity);
+            
+        //Debug.Log($"[NearMiss] +{bonusPoints} puntos (x{bonusMultiplier:F2})");
     }
 
     // ─── Eventos ──────────────────────────────────────────────────────

@@ -16,14 +16,13 @@ public class PlayerController : MonoBehaviour
     [Header("Referencias")]
     [SerializeField] private GameObject boosterFlame;
     [SerializeField] private GameObject explosionEffect;
+    [SerializeField] private UpgradeManager upgradeManager;
+    [SerializeField] private AudioManager audioManager;
+    [SerializeField] private UIManager uiManager;
 
     [Header("Input")]
     [SerializeField] private InputAction thrustAction;
     [SerializeField] private InputAction lookAction;
-
-    [SerializeField] private UpgradeManager upgradeManager;
-
-    [SerializeField] private AudioManager audioManager;
 
     private bool isInvulnerable;
     private float ghostDashTimer;
@@ -172,6 +171,15 @@ public class PlayerController : MonoBehaviour
     private void CheckBorderDeath()
     {
         if (cameraController == null) return;
+
+        bool nearBorder = cameraController.IsOutOfBounds(
+            transform.position, -2f); // Margen negativo = antes del borde
+
+        // Actualizar warning visual
+        if (uiManager != null)
+            uiManager.SetBorderWarning(nearBorder);
+
+        // Muerte al tocar el borde real
         if (cameraController.IsOutOfBounds(transform.position))
             TakeDamage();
     }
